@@ -111,11 +111,12 @@ export class HomePage implements OnInit {
      * Exibe os dados de exemplo no console do navegador.
      * Útil para testes e validação dos modelos.
      */
+    /** 
     console.log('Child:', child);
     console.log('Vaccine:', vaccine);
     console.log('Record:', record);
     console.log('Campaign:', campaign);
-
+*/
     /**
      * Mostra todos os valores definidos
      * no enum DoseStatus.

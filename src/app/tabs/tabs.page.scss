@@ -1,0 +1,17 @@
+// Tab bar já estilizada via global.scss com as cores da marca:
+// --background: var(--vk-brown)  -> fundo marrom
+// --color-selected: var(--vk-yellow)-> aba ativa amarela
+// Aqui só ajustes específicos se necessário
+
+ion-tab-bar {
+  height: 60px;
+
+  ion-tab-button {
+    font-size: 11px;
+
+    ion-label {
+      font-size: 11px;
+      font-weight: 500;
+    }
+  }
+}
