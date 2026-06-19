@@ -35,3 +35,46 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* ── VacinaKids global tokens ── */
+
+/* Status badges reutilizáveis */
+.status-aplicada {
+  --background: var(--vk-green);
+  --color: #fff;
+  background: var(--vk-green);
+  color: #fff;
+}
+
+.status-pendente {
+  --background: var(--vk-yellow);
+  --color: var(--vk-brown);
+  background: var(--vk-yellow);
+  color: var(--vk-brown);
+}
+
+.status-atrasada {
+  --background: var(--vk-orange);
+  --color: #fff;
+  background: var(--vk-orange);
+  color: #fff;
+}
+
+.status-futura {
+  --background: #e0e0e0;
+  --color: #888;
+  background: #e0e0e0;
+  color: #888;
+}
+
+/* Toolbar padrão da marca */
+ion-toolbar {
+  --background: var(--vk-brown);
+  --color: #fff;
+}
+
+ion-tab-bar {
+  --background: var(--vk-brown);
+  --color: rgba(255,255,255,0.6);
+  --color-selected: var(--vk-yellow);
+}

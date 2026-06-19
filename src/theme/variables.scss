@@ -1,2 +1,69 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+/** VacinaKids — Brand Palette **/
+:root {
+  /* ── Cores da marca ── */
+  --vk-green:  #ABC270;   /* aplicada / sucesso    */
+  --vk-yellow: #FEC868;   /* pendente / aviso      */
+  --vk-orange: #FDA769;   /* atrasada / alerta     */
+  --vk-brown:  #473C33;   /* texto / header        */
+
+  /* ── Mapeamento para tokens Ionic ── */
+
+  /** primary → marrom (headers, toolbar) **/
+  --ion-color-primary:          #473C33;
+  --ion-color-primary-rgb:      71, 60, 51;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade:    #3e352e;
+  --ion-color-primary-tint:     #595047;
+
+  /** secondary → verde (aplicada) **/
+  --ion-color-secondary:          #ABC270;
+  --ion-color-secondary-rgb:      171, 194, 112;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-shade:    #96aa62;
+  --ion-color-secondary-tint:     #b3c87e;
+
+  /** warning → amarelo (pendente) **/
+  --ion-color-warning:          #FEC868;
+  --ion-color-warning-rgb:      254, 200, 104;
+  --ion-color-warning-contrast: #473C33;
+  --ion-color-warning-shade:    #e0b05c;
+  --ion-color-warning-tint:     #fece77;
+
+  /** danger → laranja (atrasada) **/
+  --ion-color-danger:          #FDA769;
+  --ion-color-danger-rgb:      253, 167, 105;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-shade:    #df925d;
+  --ion-color-danger-tint:     #fdb078;
+
+  /** success → verde (alias) **/
+  --ion-color-success:          #ABC270;
+  --ion-color-success-rgb:      171, 194, 112;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-shade:    #96aa62;
+  --ion-color-success-tint:     #b3c87e;
+
+  /** medium / dark / light — mantém padrão Ionic **/
+  --ion-color-medium:          #92949c;
+  --ion-color-medium-rgb:      146, 148, 156;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-shade:    #808289;
+  --ion-color-medium-tint:     #9d9fa6;
+
+  --ion-color-dark:          #222428;
+  --ion-color-dark-rgb:      34, 36, 40;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-shade:    #1e2023;
+  --ion-color-dark-tint:     #383a3e;
+
+  --ion-color-light:          #f4f5f8;
+  --ion-color-light-rgb:      244, 245, 248;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-shade:    #d7d8da;
+  --ion-color-light-tint:     #f5f6f9;
+
+  /* ── Tipografia global ── */
+  --ion-font-family: 'Segoe UI', system-ui, sans-serif;
+  --ion-background-color: #fafaf7;
+  --ion-text-color: #473C33;
+}
