@@ -1,0 +1,21 @@
+ion-item {
+  --border-radius: 12px;
+  margin-bottom: 12px;
+
+  &.ion-invalid ion-label {
+    color: var(--vk-orange);
+  }
+}
+
+ion-note[slot="error"] {
+  color: var(--vk-orange);
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+ion-button[expand="block"] {
+  --background: var(--vk-green);
+  --color: #fff;
+  margin-top: 24px;
+  --border-radius: 12px;
+}

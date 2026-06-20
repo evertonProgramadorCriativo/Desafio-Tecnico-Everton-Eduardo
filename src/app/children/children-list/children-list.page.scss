@@ -1,0 +1,91 @@
+.children-list {
+  padding: 16px;
+}
+
+.child-card {
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(71, 60, 51, 0.1);
+}
+
+.child-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+// Avatar circular com inicial do nome
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.child-info {
+  flex: 1;
+
+  h2.child-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--vk-brown);
+    margin: 0 0 4px;
+  }
+
+  p.child-age {
+    font-size: 13px;
+    color: var(--vk-green);
+    font-weight: 600;
+    margin: 0 0 2px;
+  }
+
+  p.child-sex {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.child-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+// Empty state centralizado
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 64px;
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    color: var(--vk-brown);
+    font-size: 18px;
+    margin: 0 0 8px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+// FAB com cor da marca
+ion-fab-button {
+  --background: var(--vk-green);
+  --color: #fff;
+}

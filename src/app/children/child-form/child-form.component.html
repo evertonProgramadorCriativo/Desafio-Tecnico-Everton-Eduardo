@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelar()">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title>{{ titulo }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="salvar()" strong>Salvar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Campo: Nome -->
+  <ion-item [class.ion-invalid]="submitted && !nomeValido">
+    <ion-label position="floating">Nome completo *</ion-label>
+    <ion-input
+      [(ngModel)]="form.nome"
+      placeholder="Ex: Lucas Silva"
+      type="text">
+    </ion-input>
+    @if (submitted && !nomeValido) {
+      <ion-note slot="error">Nome obrigatório (mínimo 2 caracteres)</ion-note>
+    }
+  </ion-item>
+
+  <!-- Campo: Data de Nascimento -->
+  <ion-item [class.ion-invalid]="submitted && !dataNascimentoValida">
+    <ion-label position="floating">Data de nascimento *</ion-label>
+    <ion-input
+      [(ngModel)]="form.dataNascimento"
+      type="date"
+      [max]="maxDate">
+    </ion-input>
+    @if (submitted && !dataNascimentoValida) {
+      <ion-note slot="error">Data de nascimento obrigatória</ion-note>
+    }
+  </ion-item>
+
+  <!-- Campo: Sexo -->
+  <ion-item [class.ion-invalid]="submitted && !sexoValido">
+    <ion-label>Sexo *</ion-label>
+    <ion-select [(ngModel)]="form.sexo" placeholder="Selecione">
+      <ion-select-option value="M">Masculino</ion-select-option>
+      <ion-select-option value="F">Feminino</ion-select-option>
+    </ion-select>
+    @if (submitted && !sexoValido) {
+      <ion-note slot="error">Selecione o sexo</ion-note>
+    }
+  </ion-item>
+
+  <!-- Botão salvar no body também -->
+  <ion-button
+    expand="block"
+    class="ion-margin-top"
+    (click)="salvar()">
+    {{ titulo }}
+  </ion-button>
+
+</ion-content>
