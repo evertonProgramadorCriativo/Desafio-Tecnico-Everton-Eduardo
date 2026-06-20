@@ -2,7 +2,7 @@
 ## Entendendo o Desafio de Estágio 
 
 **Child** (Criança)
-- id, nome, dataNascimento, sexo, fotoUrl
+- id, nome, dataNascimento, sexo, fotoUrlytytyty
 - pertence a um responsável (userId)
 
 **Vaccine** (Vacina — catálogo)
