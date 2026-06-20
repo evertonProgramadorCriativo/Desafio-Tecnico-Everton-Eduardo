@@ -1,4 +1,105 @@
  
+## Entendendo o Desafio de Estágio 
+
+**Child** (Criança)
+- id, nome, dataNascimento, sexo, fotoUrl
+- pertence a um responsável (userId)
+
+**Vaccine** (Vacina — catálogo)
+- id, nome, sigla, descrição
+- doses: array de `{ doseNúmero, idadeRecomendadaMeses, tolerânciaMeses }`
+
+**VaccinationRecord** (Histórico vacinal)
+- id, childId, vaccineId, doseNúmero
+- dataAplicação, localAplicação, lote, profissional
+
+**Campaign** (Campanha)
+- id, título, descrição, dataInício, dataFim
+- publicoAlvo: `{ idadeMinMeses, idadeMaxMeses }`
+- vaccineIds[], status: `ativa | encerrada`
+
+---
+
+## Regras de negócio
+
+### Status de uma dose
+A partir da idade da criança e do registro vacinal, cada dose recebe um status calculado:
+
+| Condição | Status | Visual |
+|---|---|---|
+| Dose aplicada | `aplicada` | verde |
+| Data prevista futura, dentro da tolerância | `pendente` | amarelo |
+| Data prevista no passado, sem registro | `atrasada` | laranja/vermelho |
+| Criança ainda não tem a idade mínima | `futura` | cinza |
+
+**Cálculo da data prevista:** `dataNascimento + idadeRecomendadaMeses`
+**Cálculo do atraso:** `hoje > dataNascimento + idadeRecomendadaMeses + tolerânciaMeses` → atrasada
+
+### Campanhas visíveis para uma criança
+Uma campanha aparece para a criança se:
+- `status === 'ativa'` (dataFim >= hoje)
+- `idadeAtualMeses >= publicoAlvo.idadeMinMeses`
+- `idadeAtualMeses <= publicoAlvo.idadeMaxMeses`
+
+---
+
+## Fluxo de navegação
+
+```
+App
+├── Auth (Login / Cadastro)
+└── Tabs (app principal)
+    ├── [Tab 1] Home — Dashboard geral
+    ├── [Tab 2] Crianças — Lista / perfil individual
+    ├── [Tab 3] Vacinas — Catálogo de vacinas
+    └── [Tab 4] Campanhas — Campanhas ativas
+```
+
+### Detalhamento de cada tela
+
+**Home**
+- Seletor de criança ativa (chips horizontais se houver mais de uma)
+- Card de resumo: `X de Y vacinas em dia`
+- Alertas de doses atrasadas em destaque
+- Cards de campanhas ativas relevantes para a criança selecionada
+- Próximas vacinas previstas (ordenadas por data)
+
+**Crianças**
+- Lista de crianças cadastradas
+- Botão "Adicionar criança"
+- Ao clicar → Perfil da Criança
+  - Foto, nome, idade calculada dinamicamente
+  - Linha do tempo vacinal (agrupada por fase: RN, 2m, 4m, 6m…)
+  - Filtros: Todas | Realizadas | Pendentes | Atrasadas
+
+**Carteirinha (dentro do Perfil)**
+- Tabela por vacina → doses → status
+- Ao clicar em dose aplicada → modal com detalhes (data, local, lote)
+- Ao clicar em dose pendente/atrasada → modal informativo + opção de registrar
+
+**Vacinas (catálogo)**
+- Lista de todas as vacinas do PNI
+- Busca por nome/sigla
+- Ao clicar → detalhe: descrição, doenças que previne, esquema de doses
+
+**Campanhas**
+- Lista de campanhas ativas
+- Badge "Para sua família" se alguma criança se enquadra
+- Ao clicar → detalhe: vacina, público, período, onde se vacinar
+
+---
+
+## Cenários cobertos
+
+| Cenário | Como é atendido |
+|---|---|
+| 1 — Identificar doses feitas vs pendentes | Status colorido por dose na carteirinha + resumo na Home |
+| 2 — Dose atrasada | Status `atrasada` (laranja) + alerta proeminente na Home |
+| 3 — Campanha ativa | Tab Campanhas + cards na Home filtrados pela idade da criança |
+| 4 — Múltiplos filhos | Seletor de criança na Home; cada perfil é completamente isolado |
+
+---
+
 
 ## 1. Calcular status de uma dose
 

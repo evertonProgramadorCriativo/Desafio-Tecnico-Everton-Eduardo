@@ -1,83 +1,136 @@
-// Importa os recursos básicos do Angular
-import { Component, OnInit ,inject } from '@angular/core';
-
-// Importa componentes visuais do Ionic utilizados na página
+import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonContent
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonIcon,
+  IonBadge,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  alertCircle,
+  alertCircleOutline,
+  timeOutline,
+  checkmarkCircle,
+  peopleOutline,
+  megaphoneOutline,
+  chevronForwardOutline,
+  medkitOutline,
+} from 'ionicons/icons';
 
-import { ChildService } from '../services/child.service';
+import {
+  VaccineStatusService,
+  Alerta,
+  DoseStatusItem,
+  ResumoVacinal,
+} from '../services/vaccine-status.service';
 import { Child } from '../models/child.model';
+import { Campaign } from '../models/campaign.model';
+import { CHILDREN_MOCK } from '../data/children.mock';
+import { VACCINES_MOCK } from '../data/vaccines.mock';
+import { CAMPAIGNS_MOCK } from '../data/campaigns.mock';
+import { RECORDS_MOCK } from '../data/records.mock';
 
-// Importa os modelos (interfaces) utilizados na aplicação
-/*import { Child }             from '../models/child.model';
-import { Vaccine }           from '../models/vaccine.model';
-import { VaccinationRecord } from '../models/vaccination-record.model';
-import { Campaign }          from '../models/campaign.model';*/
-
-// Importa o enum que representa os possíveis status de uma dose
-import { DoseStatus }        from '../models/dose-status.enum';
+interface ChildResumo {
+  child: Child;
+  resumo: ResumoVacinal;
+}
 
 @Component({
-  // Nome utilizado para identificar o componente no HTML
   selector: 'app-home',
-
-  // Arquivo HTML associado ao componente
-  //templateUrl: 'home.page.html',
-   template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Início</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding">
-      <p>Testando ChildService no console...</p>
-    </ion-content>
-  `,
-
-  // Define o componente como standalone (não precisa de módulo)
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
   standalone: true,
-
-  // Componentes Ionic disponíveis no template
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent]
+  imports: [
+    DatePipe,
+    RouterLink,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonIcon,
+    IonBadge,
+  ],
 })
 export class HomePage implements OnInit {
+  alertas: Alerta[] = [];
+  childrenResumos: ChildResumo[] = [];
+  campanhas: Campaign[] = [];
 
+  private vaccineStatus = inject(VaccineStatusService);
 
-
-
-
-    // Injeta o serviço via inject() — padrão moderno
-  private childService = inject(ChildService);
-
-  /**
-   * Método executado automaticamente
-   * quando a página é inicializada.
-   */
-
-async ngOnInit() {
-    // 1. CREATE — adiciona criança de teste
-        const novaCrianca: Child = {
-      nome:           'Teste Child',
-      dataNascimento: '2023-01-10',
-      sexo:           'M',
-      responsavelId:  'user-teste'
-    };
-
-    const docRef = await this.childService.addChild(novaCrianca);
-    console.log(' CREATE — criança adicionada, ID:', docRef.id);
-
-     // 2. READ — lista todas as crianças em tempo real
-    this.childService.getChildren().subscribe(children => {
-      console.log(' READ — crianças no Firestore:', children);
-      console.log(`   Total: ${children.length}`);
+  constructor() {
+    addIcons({
+      alertCircle,
+      alertCircleOutline,
+      timeOutline,
+      checkmarkCircle,
+      peopleOutline,
+      megaphoneOutline,
+      chevronForwardOutline,
+      medkitOutline,
     });
+  }
 
+  ngOnInit() {
+    this.calcularDashboard();
+  }
 
+  private calcularDashboard() {
+    const todosAlertas: Alerta[] = [];
 
-    
+    for (const child of CHILDREN_MOCK) {
+      const fases = this.vaccineStatus.montarCarteirinha(
+        child,
+        VACCINES_MOCK,
+        RECORDS_MOCK,
+      );
+
+      const itens: DoseStatusItem[] = fases.reduce<DoseStatusItem[]>(
+        (acc, f) => acc.concat(f.doses),
+        [],
+      );
+
+      const resumo = this.vaccineStatus.calcularResumoVacinal(itens);
+      this.childrenResumos.push({ child, resumo });
+
+      const alertasChild = this.vaccineStatus.gerarAlertas(child, itens);
+      todosAlertas.push(...alertasChild);
+
+      const campanhasChild = this.vaccineStatus.filtrarCampanhas(
+        child,
+        CAMPAIGNS_MOCK,
+      );
+
+      for (const c of campanhasChild) {
+        if (!this.campanhas.find((x) => x.id === c.id)) {
+          this.campanhas.push(c);
+        }
+      }
+    }
+
+    this.alertas = todosAlertas.sort((a, b) => {
+      if (a.urgencia !== b.urgencia) return a.urgencia === 'alta' ? -1 : 1;
+      return a.dataPrevista.getTime() - b.dataPrevista.getTime();
+    });
+  }
+
+  get totalCriancas(): number {
+    return CHILDREN_MOCK.length;
+  }
+
+  getAvatarColor(sexo: string): string {
+    return sexo === 'M' ? 'var(--vk-green)' : 'var(--vk-orange)';
+  }
+
+  getInicial(nome: string): string {
+    return nome.charAt(0).toUpperCase();
   }
 }

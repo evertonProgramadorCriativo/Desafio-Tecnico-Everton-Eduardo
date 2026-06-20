@@ -1,27 +1,253 @@
-#container {
-  text-align: center;
+//  Hero 
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.hero {
+  background: var(--vk-brown);
+  color: #fff;
+  padding: 24px 20px 20px;
+
+  .hero-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #fff;
+  }
+
+  .hero-sub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--vk-yellow);
+    margin: 0;
+
+    ion-icon { font-size: 16px; }
+  }
 }
 
-#container strong {
+//  Sections 
+
+.section {
+  padding: 20px 16px 0;
+}
+
+.section-last {
+  padding-bottom: 24px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vk-brown);
+  margin: 0 0 12px;
+
+  ion-icon {
+    font-size: 18px;
+    color: var(--vk-green);
+  }
+
+  .count-badge {
+    --background: var(--vk-orange);
+    --color: #fff;
+    margin-left: auto;
+    font-size: 12px;
+  }
+}
+
+//  Alert cards 
+
+.alert-card {
+  border-radius: 14px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--vk-yellow);
+  box-shadow: 0 2px 8px rgba(71, 60, 51, 0.08);
+
+  &.alta { border-left-color: var(--vk-orange); }
+
+  ion-card-content { padding: 12px 14px; }
+}
+
+.alert-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-alerta-alta  { font-size: 28px; color: var(--vk-orange); flex-shrink: 0; }
+.icon-alerta-media { font-size: 28px; color: var(--vk-yellow); flex-shrink: 0; }
+
+.alert-info {
+  flex: 1;
+  min-width: 0;
+
+  .alert-vacina {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vk-brown);
+    margin: 0 0 2px;
+  }
+
+  .alert-child {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    margin: 0 0 2px;
+  }
+
+  .alert-data {
+    font-size: 11px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+//  All-good card 
+
+.all-good-card {
+  margin: 20px 16px 0;
+  border-radius: 14px;
+  border-left: 4px solid var(--vk-green);
+
+  .all-good {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 0;
+
+    ion-icon {
+      font-size: 38px;
+      color: var(--vk-green);
+    }
+
+    p {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--vk-brown);
+      margin: 0;
+    }
+  }
+}
+
+//  Child summary cards 
+
+.child-card {
+  border-radius: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(71, 60, 51, 0.08);
+  cursor: pointer;
+
+  ion-card-content { padding: 12px 14px; }
+}
+
+.child-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.child-info {
+  flex: 1;
+  min-width: 0;
+
+  .child-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vk-brown);
+    margin: 0 0 6px;
+  }
+
+  .child-stats {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    margin: 4px 0 0;
+
+    .pct {
+      color: var(--vk-green);
+      font-weight: 700;
+      margin-left: 6px;
+    }
+  }
+}
+
+// Mini barra de progresso
+.mini-progress-bg {
+  width: 100%;
+  height: 6px;
+  background: #e8e8e8;
+  border-radius: 6px;
+  overflow: hidden;
+
+  .mini-progress-fill {
+    height: 100%;
+    background: var(--vk-green);
+    border-radius: 6px;
+    transition: width 0.4s ease;
+  }
+}
+
+.chevron {
   font-size: 20px;
-  line-height: 26px;
+  color: var(--ion-color-medium);
+  flex-shrink: 0;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+//  Campaign cards 
 
-  color: #8c8c8c;
+.campaign-card {
+  border-radius: 14px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--vk-green);
+  box-shadow: 0 2px 8px rgba(71, 60, 51, 0.08);
 
-  margin: 0;
-}
+  ion-card-content { padding: 12px 14px; }
 
-#container a {
-  text-decoration: none;
+  .campaign-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vk-brown);
+    margin: 0 0 4px;
+  }
+
+  .campaign-desc {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    margin: 0 0 8px;
+    line-height: 1.5;
+  }
+
+  .campaign-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--vk-green);
+    font-weight: 600;
+    margin: 0;
+
+    ion-icon { font-size: 14px; }
+  }
 }

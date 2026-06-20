@@ -1,20 +1,126 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Vacinas para crianças
-    </ion-title>
+    <ion-title>VacinaKids</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!--  Hero  -->
+  <div class="hero">
+    <h2 class="hero-title">Olá, responsável!</h2>
+    <p class="hero-sub">
+      <ion-icon name="people-outline"></ion-icon>
+      {{ totalCriancas }} {{ totalCriancas === 1 ? 'criança cadastrada' : 'crianças cadastradas' }}
+    </p>
   </div>
+
+  <!--  Alertas  -->
+  @if (alertas.length > 0) {
+    <div class="section">
+      <h3 class="section-title">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        Atenção necessária
+        <ion-badge class="count-badge">{{ alertas.length }}</ion-badge>
+      </h3>
+
+      @for (alerta of alertas; track alerta.childId + alerta.vacina.id + alerta.dose.doseNumero) {
+        <ion-card class="alert-card" [class.alta]="alerta.urgencia === 'alta'">
+          <ion-card-content>
+            <div class="alert-row">
+
+              <ion-icon
+                [name]="alerta.urgencia === 'alta' ? 'alert-circle' : 'time-outline'"
+                [class]="alerta.urgencia === 'alta' ? 'icon-alerta-alta' : 'icon-alerta-media'">
+              </ion-icon>
+
+              <div class="alert-info">
+                <p class="alert-vacina">{{ alerta.vacina.sigla }} — Dose {{ alerta.dose.doseNumero }}</p>
+                <p class="alert-child">{{ alerta.childNome }}</p>
+                <p class="alert-data">Prevista: {{ alerta.dataPrevista | date:'dd/MM/yyyy' }}</p>
+              </div>
+
+              <span class="status-tag"
+                [class.status-atrasada]="alerta.urgencia === 'alta'"
+                [class.status-pendente]="alerta.urgencia === 'media'">
+                {{ alerta.status }}
+              </span>
+
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+    </div>
+  }
+
+  <!--  Tudo em dia  -->
+  @if (alertas.length === 0) {
+    <ion-card class="all-good-card">
+      <ion-card-content>
+        <div class="all-good">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <p>Todas as vacinas em dia!</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  }
+
+  <!--  Resumo por criança  -->
+  <div class="section">
+    <h3 class="section-title">
+      <ion-icon name="people-outline"></ion-icon>
+      Resumo por criança
+    </h3>
+
+    @for (item of childrenResumos; track item.child.id) {
+      <ion-card class="child-card" [routerLink]="['/tabs/children', item.child.id]">
+        <ion-card-content>
+          <div class="child-row">
+
+            <div class="avatar" [style.background]="getAvatarColor(item.child.sexo)">
+              {{ getInicial(item.child.nome) }}
+            </div>
+
+            <div class="child-info">
+              <p class="child-name">{{ item.child.nome }}</p>
+              <div class="mini-progress-bg">
+                <div class="mini-progress-fill" [style.width.%]="item.resumo.percentual"></div>
+              </div>
+              <p class="child-stats">
+                {{ item.resumo.aplicadas }}/{{ item.resumo.total }} doses
+                <span class="pct">{{ item.resumo.percentual }}%</span>
+              </p>
+            </div>
+
+            <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
+
+  <!--  Campanhas ativas  -->
+  @if (campanhas.length > 0) {
+    <div class="section section-last">
+      <h3 class="section-title">
+        <ion-icon name="megaphone-outline"></ion-icon>
+        Campanhas ativas
+      </h3>
+
+      @for (campanha of campanhas; track campanha.id) {
+        <ion-card class="campaign-card">
+          <ion-card-content>
+            <p class="campaign-title">{{ campanha.titulo }}</p>
+            <p class="campaign-desc">{{ campanha.descricao }}</p>
+            <p class="campaign-date">
+              <ion-icon name="medkit-outline"></ion-icon>
+              Até {{ campanha.dataFim | date:'dd/MM/yyyy' }}
+            </p>
+          </ion-card-content>
+        </ion-card>
+      }
+    </div>
+  }
+
 </ion-content>
