@@ -1,4 +1,4 @@
-import { Component , OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 
 import { CHILDREN_MOCK }  from './data/children.mock';
@@ -11,7 +11,7 @@ import { RECORDS_MOCK }   from './data/records.mock';
   templateUrl: 'app.component.html',
   imports: [IonApp, IonRouterOutlet],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
    ngOnInit() {
     console.log('Children:',  CHILDREN_MOCK);
     console.log('Vaccines:',  VACCINES_MOCK);
