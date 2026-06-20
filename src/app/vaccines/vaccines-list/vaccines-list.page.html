@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Vacinas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Busca em tempo real -->
+  <ion-searchbar
+    placeholder="Buscar por nome ou sigla..."
+    (ionInput)="onSearch($event)"
+    animated="true"
+    class="vk-searchbar">
+  </ion-searchbar>
+
+  <!-- Lista de vacinas -->
+  @if (filteredVaccines.length > 0) {
+    <ion-list lines="none" class="vaccines-list">
+
+      @for (vaccine of filteredVaccines; track vaccine.id) {
+        <ion-item
+          [routerLink]="['/tabs/vaccines', vaccine.id]"
+          class="vaccine-item"
+          detail="false">
+
+          <!-- Ícone da vacina -->
+          <div class="vaccine-icon-wrap" slot="start">
+            <ion-icon name="medkit-outline"></ion-icon>
+          </div>
+
+          <!-- Nome e sigla -->
+          <ion-label>
+            <h2 class="vaccine-name">{{ vaccine.nome }}</h2>
+            <p class="vaccine-sigla">{{ vaccine.sigla }}</p>
+          </ion-label>
+
+          <!-- Badge de doses + seta -->
+          <div slot="end" class="end-slot">
+            <ion-badge class="doses-badge">
+              {{ vaccine.doses.length }}
+              {{ vaccine.doses.length === 1 ? 'dose' : 'doses' }}
+            </ion-badge>
+            <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+          </div>
+
+        </ion-item>
+      }
+
+    </ion-list>
+  }
+
+  <!-- Empty state quando busca não encontra nada -->
+  @if (filteredVaccines.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="medkit-outline"></ion-icon>
+      <p>Nenhuma vacina encontrada</p>
+    </div>
+  }
+
+</ion-content>

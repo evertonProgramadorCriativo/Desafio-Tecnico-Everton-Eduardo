@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/vaccines" text="Vacinas"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ vaccine?.sigla ?? '...' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  @if (vaccine) {
+
+    <!-- Hero: nome, sigla, descrição -->
+    <ion-card class="hero-card">
+      <ion-card-content>
+
+        <div class="vaccine-hero">
+          <div class="vaccine-icon-wrap">
+            <ion-icon name="medkit-outline"></ion-icon>
+          </div>
+          <div class="vaccine-info">
+            <h1 class="vaccine-name">{{ vaccine.nome }}</h1>
+            <ion-badge class="sigla-badge">{{ vaccine.sigla }}</ion-badge>
+          </div>
+        </div>
+
+        <p class="vaccine-descricao">{{ vaccine.descricao }}</p>
+
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Tabela de doses -->
+    <h3 class="section-title">
+      <ion-icon name="calendar-outline"></ion-icon>
+      Esquema de doses
+    </h3>
+
+    <ion-card class="doses-card">
+      <ion-card-content class="ion-no-padding">
+
+        <!-- Cabeçalho da tabela -->
+        <div class="table-header">
+          <span>Dose</span>
+          <span>Idade recomendada</span>
+          <span>Tolerância</span>
+        </div>
+
+        <!-- Linhas das doses -->
+        @for (dose of vaccine.doses; track dose.doseNumero; let last = $last) {
+          <div class="table-row" [class.last-row]="last">
+
+            <span class="dose-num">
+              {{ dose.doseNumero }}ª
+            </span>
+
+            <span class="dose-idade">
+              {{ labelIdade(dose.idadeRecomendadaMeses) }}
+            </span>
+
+            <span class="dose-tolerancia">
+              <ion-icon name="time-outline"></ion-icon>
+              +{{ dose.toleranciaMeses }} {{ dose.toleranciaMeses === 1 ? 'mês' : 'meses' }}
+            </span>
+
+          </div>
+        }
+
+      </ion-card-content>
+    </ion-card>
+
+  }
+
+  <!-- Vacina não encontrada -->
+  @if (!vaccine) {
+    <div class="not-found">
+      <ion-icon name="medkit-outline"></ion-icon>
+      <p>Vacina não encontrada</p>
+    </div>
+  }
+
+</ion-content>

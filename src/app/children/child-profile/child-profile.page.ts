@@ -87,7 +87,7 @@ export class ChildProfilePage implements OnInit {
     if (id) this.loadChild(id);
   }
 
-  // ── Carrega criança e calcula resumo vacinal real ────────────────────────
+  //  Carrega criança e calcula resumo vacinal real
 
   private loadChild(id: string) {
     const found = CHILDREN_MOCK.find((c) => c.id === id);
@@ -108,7 +108,10 @@ export class ChildProfilePage implements OnInit {
     );
 
     // Flatten de todas as doses das fases
-    const itens: DoseStatusItem[] = fases.flatMap((f) => f.doses);
+    const itens: DoseStatusItem[] = fases.reduce<DoseStatusItem[]>(
+      (acc, fase) => acc.concat(fase.doses),
+      [],
+    );
 
     // Regra 4 → resumo real (substitui o placeholder anterior)
     this.resumoVacinal = this.vaccineStatus.calcularResumoVacinal(itens);
@@ -117,7 +120,7 @@ export class ChildProfilePage implements OnInit {
     console.log('Resumo vacinal:', this.resumoVacinal);
   }
 
-  // ── Calcula idade em anos e meses para exibição ──────────────────────────
+  //  Calcula idade em anos e meses para exibição
 
   calcularIdade(dataNascimento: string): string {
     const hoje = new Date();
@@ -138,7 +141,7 @@ export class ChildProfilePage implements OnInit {
     return `${anos} ano${anos > 1 ? 's' : ''} e ${meses} ${meses === 1 ? 'mês' : 'meses'}`;
   }
 
-  // ── Getters auxiliares ───────────────────────────────────────────────────
+  //  Getters auxiliares
 
   get percentualAplicadas(): number {
     return this.resumoVacinal.percentual;

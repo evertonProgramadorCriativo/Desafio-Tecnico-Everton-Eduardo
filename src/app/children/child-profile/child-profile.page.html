@@ -1,0 +1,125 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/children" text="Crianças"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  @if (child) {
+
+    <!-- Hero: avatar + nome + idade -->
+    <div class="hero" [style.background]="getAvatarColor(child.sexo)">
+      <div class="avatar">{{ getInicial(child.nome) }}</div>
+      <h1 class="child-name">{{ child.nome }}</h1>
+      <p class="child-age">
+        <ion-icon name="calendar-outline"></ion-icon>
+        {{ idadeFormatada }}
+      </p>
+      <p class="child-sex">
+        <ion-icon name="person-outline"></ion-icon>
+        {{ child.sexo === 'M' ? 'Masculino' : 'Feminino' }}
+      </p>
+    </div>
+
+    <!-- Card: barra de progresso vacinal -->
+    <div class="section">
+      <ion-card class="progress-card">
+        <ion-card-content>
+
+          <div class="progress-header">
+            <ion-icon name="medkit-outline" class="icon-medkit"></ion-icon>
+            <div>
+              <p class="progress-label">Vacinas em dia</p>
+              <p class="progress-count">
+                {{ resumoVacinal.aplicadas }} de {{ resumoVacinal.total }} doses aplicadas
+              </p>
+            </div>
+            <span class="progress-pct">{{ percentualAplicadas }}%</span>
+          </div>
+
+          <!-- Barra de progresso -->
+          <div class="progress-bg">
+            <div class="progress-fill" [style.width.%]="percentualAplicadas"></div>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Cards de status -->
+    <div class="status-grid">
+
+      <ion-card class="status-card card-atrasada">
+        <ion-card-content>
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span class="status-count">{{ resumoVacinal.atrasadas }}</span>
+          <p class="status-label">Atrasadas</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="status-card card-pendente">
+        <ion-card-content>
+          <ion-icon name="time-outline"></ion-icon>
+          <span class="status-count">{{ resumoVacinal.pendentes }}</span>
+          <p class="status-label">Pendentes</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="status-card card-futura">
+        <ion-card-content>
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span class="status-count">{{ resumoVacinal.futuras }}</span>
+          <p class="status-label">Futuras</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="status-card card-aplicada">
+        <ion-card-content>
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span class="status-count">{{ resumoVacinal.aplicadas }}</span>
+          <p class="status-label">Aplicadas</p>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <!-- Info nascimento -->
+    <div class="section section-last">
+      <ion-card class="info-card">
+        <ion-card-header>
+          <ion-card-title class="info-title">Dados cadastrais</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-row">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <div>
+              <p class="info-label">Data de nascimento</p>
+              <p class="info-value">{{ child.dataNascimento | date:'dd/MM/yyyy' }}</p>
+            </div>
+          </div>
+          <div class="info-row">
+            <ion-icon name="person-outline"></ion-icon>
+            <div>
+              <p class="info-label">Sexo</p>
+              <p class="info-value">{{ child.sexo === 'M' ? 'Masculino' : 'Feminino' }}</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+  }
+
+  <!-- Criança não encontrada -->
+  @if (!child) {
+    <div class="not-found">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <p>Criança não encontrada</p>
+    </div>
+  }
+
+</ion-content>

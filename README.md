@@ -43,17 +43,7 @@ Uma campanha aparece para a criança se:
 
 ---
 
-## Fluxo de navegação
 
-```
-App
-├── Auth (Login / Cadastro)
-└── Tabs (app principal)
-    ├── [Tab 1] Home — Dashboard geral
-    ├── [Tab 2] Crianças — Lista / perfil individual
-    ├── [Tab 3] Vacinas — Catálogo de vacinas
-    └── [Tab 4] Campanhas — Campanhas ativas
-```
 
 ### Detalhamento de cada tela
 

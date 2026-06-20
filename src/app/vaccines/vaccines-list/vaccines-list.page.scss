@@ -1,0 +1,102 @@
+// Searchbar com cor da marca
+.vk-searchbar {
+  --background: #f0ede9;
+  --border-radius: 12px;
+  --placeholder-color: var(--ion-color-medium);
+  --icon-color: var(--vk-green);
+  padding: 8px 12px 4px;
+}
+
+// Lista
+.vaccines-list {
+  padding: 8px 12px 24px;
+}
+
+// Item individual
+.vaccine-item {
+  --background: #fff;
+  --border-radius: 14px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(71, 60, 51, 0.08);
+}
+
+// Ícone circular à esquerda
+.vaccine-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(171, 194, 112, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 4px;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--vk-green);
+  }
+}
+
+// Textos
+.vaccine-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vk-brown);
+  margin: 0 0 3px;
+}
+
+.vaccine-sigla {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+// Slot direito
+.end-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Badge de doses
+.doses-badge {
+  --background: var(--vk-green);
+  --color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+// Seta
+.chevron {
+  font-size: 18px;
+  color: var(--ion-color-medium);
+}
+
+// Empty state
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 56px;
+    color: var(--ion-color-medium);
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
