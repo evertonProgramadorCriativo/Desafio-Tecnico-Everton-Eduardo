@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import {
   IonHeader,
   IonToolbar,
@@ -12,6 +13,8 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
+  IonProgressBar,
+  IonBadge,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -28,11 +31,15 @@ import {
   VaccineStatusService,
   DoseStatusItem,
   ResumoVacinal,
+  Alerta,
 } from '../../services/vaccine-status.service';
+import { VaccinationRecordService } from '../../services/vaccination-record.service';
+import { VaccinationCardComponent } from '../vaccination-card/vaccination-card.component';
 import { Child } from '../../models/child.model';
 import { CHILDREN_MOCK } from '../../data/children.mock';
 import { VACCINES_MOCK } from '../../data/vaccines.mock';
-import { RECORDS_MOCK } from '../../data/records.mock';
+import { CAMPAIGNS_MOCK } from '../../data/campaigns.mock';
+import { testarCalculadoraDose } from '../../utils/dose-status.calculator';
 
 @Component({
   selector: 'app-child-profile',
@@ -52,13 +59,15 @@ import { RECORDS_MOCK } from '../../data/records.mock';
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
+    IonProgressBar,
+    IonBadge,
+    VaccinationCardComponent,
   ],
 })
-export class ChildProfilePage implements OnInit {
+export class ChildProfilePage implements OnInit, OnDestroy {
   child: Child | null = null;
   idadeFormatada = '';
 
-  // Resumo real calculado pelo VaccineStatusService (Regra 4)
   resumoVacinal: ResumoVacinal = {
     total: 0,
     aplicadas: 0,
@@ -68,8 +77,13 @@ export class ChildProfilePage implements OnInit {
     percentual: 0,
   };
 
+  // Alertas de doses atrasadas/próximas para a lista abaixo da barra
+  alertas: Alerta[] = [];
+
+  private sub?: Subscription;
   private route = inject(ActivatedRoute);
   private vaccineStatus = inject(VaccineStatusService);
+  private recordService = inject(VaccinationRecordService);
 
   constructor() {
     addIcons({
@@ -83,68 +97,73 @@ export class ChildProfilePage implements OnInit {
   }
 
   ngOnInit() {
+    // Testa os calculadores puros (abre o console para ver os resultados)
+    testarCalculadoraDose();
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.loadChild(id);
   }
 
-  //  Carrega criança e calcula resumo vacinal real
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  //  Carrega criança e assina atualizações reativas ─
 
   private loadChild(id: string) {
     const found = CHILDREN_MOCK.find((c) => c.id === id);
-
     if (!found) {
-      console.warn('Criança não encontrada para ID:', id);
+      console.warn('Criança não encontrada:', id);
       return;
     }
 
     this.child = found;
     this.idadeFormatada = this.calcularIdade(found.dataNascimento);
 
-    // Regra 2 → monta carteirinha completa
-    const fases = this.vaccineStatus.montarCarteirinha(
-      found,
-      VACCINES_MOCK,
-      RECORDS_MOCK,
-    );
+    // GUARDAR → recalcula sempre que um novo registro for adicionado
+    this.sub = this.recordService.getRecordsByChild(id).subscribe((records) => {
+      const fases = this.vaccineStatus.montarCarteirinha(
+        found,
+        VACCINES_MOCK,
+        records,
+      );
+      const itens: DoseStatusItem[] = fases.reduce(
+        (todos, fase) => todos.concat(fase.doses),
+        [] as DoseStatusItem[],
+      );
 
-    // Flatten de todas as doses das fases
-    const itens: DoseStatusItem[] = fases.reduce<DoseStatusItem[]>(
-      (acc, fase) => acc.concat(fase.doses),
-      [],
-    );
+      this.resumoVacinal = this.vaccineStatus.calcularResumoVacinal(itens);
+      this.alertas = this.vaccineStatus.gerarAlertas(found, itens);
 
-    // Regra 4 → resumo real (substitui o placeholder anterior)
-    this.resumoVacinal = this.vaccineStatus.calcularResumoVacinal(itens);
-
-    console.log('Criança carregada:', found.nome);
-    console.log('Resumo vacinal:', this.resumoVacinal);
+      console.log('Resumo:', this.resumoVacinal);
+    });
   }
 
-  //  Calcula idade em anos e meses para exibição
-
-  calcularIdade(dataNascimento: string): string {
-    const hoje = new Date();
-    const nascimento = new Date(dataNascimento + 'T00:00:00');
-
-    let anos = hoje.getFullYear() - nascimento.getFullYear();
-    let meses = hoje.getMonth() - nascimento.getMonth();
-
-    if (meses < 0) {
-      anos--;
-      meses += 12;
-    }
-
-    const totalMeses = anos * 12 + meses;
-
-    if (totalMeses < 12) return `${totalMeses} meses`;
-    if (meses === 0) return `${anos} ano${anos > 1 ? 's' : ''}`;
-    return `${anos} ano${anos > 1 ? 's' : ''} e ${meses} ${meses === 1 ? 'mês' : 'meses'}`;
-  }
-
-  //  Getters auxiliares
+  //  Getters
 
   get percentualAplicadas(): number {
     return this.resumoVacinal.percentual;
+  }
+
+  // Cor da barra de progresso: verde | amarelo | laranja
+  get progressClass(): string {
+    const pct = this.resumoVacinal.percentual;
+    if (pct >= 80) return 'prog-verde';
+    if (pct >= 50) return 'prog-amarelo';
+    return 'prog-laranja';
+  }
+
+  // Texto descritivo da cor
+  get statusTexto(): string {
+    const pct = this.resumoVacinal.percentual;
+    if (pct >= 80) return 'Em dia';
+    if (pct >= 50) return 'Atenção';
+    return 'Urgente';
+  }
+
+  // Alertas apenas das doses atrasadas (urgência alta)
+  get alertasAtrasados(): Alerta[] {
+    return this.alertas.filter((a) => a.urgencia === 'alta');
   }
 
   getInicial(nome: string): string {
@@ -153,5 +172,20 @@ export class ChildProfilePage implements OnInit {
 
   getAvatarColor(sexo: string): string {
     return sexo === 'M' ? 'var(--vk-green)' : 'var(--vk-orange)';
+  }
+
+  calcularIdade(dataNascimento: string): string {
+    const hoje = new Date();
+    const nasc = new Date(dataNascimento + 'T00:00:00');
+    let anos = hoje.getFullYear() - nasc.getFullYear();
+    let meses = hoje.getMonth() - nasc.getMonth();
+    if (meses < 0) {
+      anos--;
+      meses += 12;
+    }
+    const totalMeses = anos * 12 + meses;
+    if (totalMeses < 12) return `${totalMeses} meses`;
+    if (meses === 0) return `${anos} ano${anos > 1 ? 's' : ''}`;
+    return `${anos} ano${anos > 1 ? 's' : ''} e ${meses} ${meses === 1 ? 'mês' : 'meses'}`;
   }
 }

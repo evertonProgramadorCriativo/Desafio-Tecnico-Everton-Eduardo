@@ -11,7 +11,7 @@
 
   @if (child) {
 
-    <!-- Hero: avatar + nome + idade -->
+    <!-- Hero -->
     <div class="hero" [style.background]="getAvatarColor(child.sexo)">
       <div class="avatar">{{ getInicial(child.nome) }}</div>
       <h1 class="child-name">{{ child.nome }}</h1>
@@ -25,34 +25,62 @@
       </p>
     </div>
 
-    <!-- Card: barra de progresso vacinal -->
+    <!-- Card: situação vacinal com ion-progress-bar colorida -->
     <div class="section">
       <ion-card class="progress-card">
         <ion-card-content>
 
           <div class="progress-header">
             <ion-icon name="medkit-outline" class="icon-medkit"></ion-icon>
-            <div>
-              <p class="progress-label">Vacinas em dia</p>
+            <div class="progress-texts">
+              <p class="progress-label">Situação vacinal</p>
               <p class="progress-count">
                 {{ resumoVacinal.aplicadas }} de {{ resumoVacinal.total }} doses aplicadas
               </p>
             </div>
-            <span class="progress-pct">{{ percentualAplicadas }}%</span>
+            <div class="progress-pct-wrap">
+              <span class="progress-pct" [class]="progressClass">{{ percentualAplicadas }}%</span>
+              <span class="progress-status" [class]="progressClass">{{ statusTexto }}</span>
+            </div>
           </div>
 
-          <!-- Barra de progresso -->
-          <div class="progress-bg">
-            <div class="progress-fill" [style.width.%]="percentualAplicadas"></div>
-          </div>
+          <!-- ion-progress-bar com cor dinâmica -->
+          <ion-progress-bar
+            [value]="percentualAplicadas / 100"
+            [class]="'vk-progress ' + progressClass">
+          </ion-progress-bar>
+
+          <!-- Lista de doses atrasadas -->
+          @if (alertasAtrasados.length > 0) {
+            <div class="alertas-lista">
+              <p class="alertas-titulo">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                {{ alertasAtrasados.length }} dose{{ alertasAtrasados.length > 1 ? 's' : '' }} atrasada{{ alertasAtrasados.length > 1 ? 's' : '' }}
+              </p>
+
+              @for (alerta of alertasAtrasados; track (alerta.vacina?.id ?? '') + (alerta.dose?.doseNumero ?? 0)) {
+                <div class="alerta-row">
+                  <ion-badge class="alerta-badge">{{ alerta.vacina.sigla }}</ion-badge>
+                  <span class="alerta-info">Dose {{ alerta.dose.doseNumero }} — prevista {{ alerta.dataPrevista | date:'MM/yyyy' }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Tudo em dia -->
+          @if (alertasAtrasados.length === 0 && resumoVacinal.atrasadas === 0) {
+            <div class="tudo-em-dia">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Nenhuma dose atrasada!</span>
+            </div>
+          }
 
         </ion-card-content>
       </ion-card>
     </div>
 
-    <!-- Cards de status -->
+    <!-- Grid 2x2 de status -->
     <div class="status-grid">
-
       <ion-card class="status-card card-atrasada">
         <ion-card-content>
           <ion-icon name="alert-circle-outline"></ion-icon>
@@ -84,10 +112,18 @@
           <p class="status-label">Aplicadas</p>
         </ion-card-content>
       </ion-card>
-
     </div>
 
-    <!-- Info nascimento -->
+    <!-- Carteirinha por fases -->
+    <div class="section-carteirinha">
+      <div class="carteirinha-header">
+        <ion-icon name="medkit-outline"></ion-icon>
+        <h3>Carteirinha de vacinação</h3>
+      </div>
+      <app-vaccination-card [child]="child"></app-vaccination-card>
+    </div>
+
+    <!-- Dados cadastrais -->
     <div class="section section-last">
       <ion-card class="info-card">
         <ion-card-header>
@@ -114,7 +150,6 @@
 
   }
 
-  <!-- Criança não encontrada -->
   @if (!child) {
     <div class="not-found">
       <ion-icon name="alert-circle-outline"></ion-icon>

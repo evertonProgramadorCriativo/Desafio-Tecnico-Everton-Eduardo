@@ -1,0 +1,94 @@
+// Cabeçalho da dose
+.dose-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 12px;
+
+  .vaccine-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--vk-brown);
+    margin: 0 0 4px;
+  }
+
+  .dose-label {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+
+  &.status-aplicada { --background: var(--vk-green);  --color: #fff; }
+  &.status-pendente { --background: var(--vk-yellow); --color: var(--vk-brown); }
+  &.status-atrasada { --background: var(--vk-orange); --color: #fff; }
+  &.status-futura   { --background: #e0e0e0;          --color: #888; }
+}
+
+.divider {
+  height: 1px;
+  background: rgba(71, 60, 51, 0.1);
+  margin: 0 0 20px;
+}
+
+// Linhas de visualização (modo view)
+.view-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(71, 60, 51, 0.06);
+
+  &:last-child { border-bottom: none; }
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--vk-green);
+    flex-shrink: 0;
+  }
+
+  .row-label {
+    font-size: 11px;
+    color: var(--ion-color-medium);
+    margin: 0 0 2px;
+  }
+
+  .row-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--vk-brown);
+    margin: 0;
+  }
+}
+
+// Campos do formulário (modo register)
+ion-item {
+  --border-radius: 12px;
+  margin-bottom: 12px;
+
+  &.ion-invalid ion-label {
+    color: var(--vk-orange);
+  }
+}
+
+ion-note[slot="error"] {
+  color: var(--vk-orange);
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+// Botão de salvar
+ion-button[expand="block"] {
+  --background: var(--vk-green);
+  --color: #fff;
+  --border-radius: 12px;
+  margin-top: 24px;
+}

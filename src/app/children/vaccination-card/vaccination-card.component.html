@@ -1,0 +1,74 @@
+<!-- Filtros -->
+<ion-segment
+  (ionChange)="onFiltroChange($event)"
+  value="todas"
+  class="filter-segment">
+  <ion-segment-button value="todas">
+    <ion-label>Todas</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="aplicadas">
+    <ion-label>Realizadas</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="pendentes">
+    <ion-label>Pendentes</ion-label>
+  </ion-segment-button>
+  <ion-segment-button value="atrasadas">
+    <ion-label>Atrasadas</ion-label>
+  </ion-segment-button>
+</ion-segment>
+
+<!-- Conteúdo das fases -->
+<div class="carteirinha">
+
+  @if (fasesVisiveis.length === 0) {
+    <div class="empty-filter">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+      <p>Nenhuma dose nessa categoria</p>
+    </div>
+  }
+
+  @for (fase of fasesVisiveis; track fase.idadeMeses) {
+
+    <!-- Cabeçalho da fase etária -->
+    <div class="fase-header">
+      <span class="fase-label">{{ fase.label }}</span>
+      <span class="fase-count">{{ fase.doses.length }} dose{{ fase.doses.length > 1 ? 's' : '' }}</span>
+    </div>
+
+    <!-- Doses da fase -->
+    @for (item of fase.doses; track (item.dose?.doseNumero ?? 0) + (item.vacina?.id ?? '')) {
+
+      <div
+        class="dose-row"
+        [class.clickable]="isClickable(item.status)"
+        (click)="onDoseClick(item)">
+
+        <!-- Ícone de status -->
+        <ion-icon
+          [name]="getStatusIcon(item.status)"
+          [class]="'status-icon icon-' + item.status">
+        </ion-icon>
+
+        <!-- Nome da vacina e número da dose -->
+        <div class="dose-info">
+          <p class="dose-vacina">{{ item.vacina.nome }}</p>
+          <p class="dose-numero">Dose {{ item.dose.doseNumero }}</p>
+        </div>
+
+        <!-- Badge colorido -->
+        <ion-badge [class]="'dose-badge badge-' + item.status">
+          {{ getLabelStatus(item.status) }}
+        </ion-badge>
+
+        <!-- Seta para doses clicáveis -->
+        @if (isClickable(item.status)) {
+          <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+        }
+
+      </div>
+
+    }
+
+  }
+
+</div>

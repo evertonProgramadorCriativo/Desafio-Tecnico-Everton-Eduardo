@@ -1,0 +1,128 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="fechar()">Fechar</ion-button>
+    </ion-buttons>
+    <ion-title>{{ titulo }}</ion-title>
+    @if (mode === 'register') {
+      <ion-buttons slot="end">
+        <ion-button (click)="salvar()" strong>Salvar</ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Cabeçalho da dose -->
+  <div class="dose-header">
+    <div class="dose-meta">
+      <p class="vaccine-name">{{ doseItem.vacina.nome }}</p>
+      <p class="dose-label">Dose {{ doseItem.dose.doseNumero }} de {{ doseItem.vacina.doses.length }}</p>
+    </div>
+    <ion-badge class="status-badge" [class]="'status-' + doseItem.status">
+      {{ doseItem.status }}
+    </ion-badge>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- MODO VISUALIZAÇÃO (dose aplicada) -->
+  @if (mode === 'view' && doseItem.registro) {
+    <div class="view-row">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <div>
+        <p class="row-label">Data de aplicação</p>
+        <p class="row-value">{{ doseItem.registro.dataAplicacao | date:'dd/MM/yyyy' }}</p>
+      </div>
+    </div>
+
+    @if (doseItem.registro.local) {
+      <div class="view-row">
+        <ion-icon name="location-outline"></ion-icon>
+        <div>
+          <p class="row-label">Local</p>
+          <p class="row-value">{{ doseItem.registro.local }}</p>
+        </div>
+      </div>
+    }
+
+    @if (doseItem.registro.lote) {
+      <div class="view-row">
+        <ion-icon name="barcode-outline"></ion-icon>
+        <div>
+          <p class="row-label">Lote</p>
+          <p class="row-value">{{ doseItem.registro.lote }}</p>
+        </div>
+      </div>
+    }
+
+    @if (doseItem.registro.profissional) {
+      <div class="view-row">
+        <ion-icon name="person-outline"></ion-icon>
+        <div>
+          <p class="row-label">Profissional</p>
+          <p class="row-value">{{ doseItem.registro.profissional }}</p>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- MODO REGISTRO (dose pendente/atrasada) -->
+  @if (mode === 'register') {
+
+    <!-- Data de aplicação (obrigatória) -->
+    <ion-item [class.ion-invalid]="submitted && !dataValida">
+      <ion-label position="floating">Data de aplicação *</ion-label>
+      <ion-input
+        [(ngModel)]="form.dataAplicacao"
+        type="date"
+        [max]="maxDate"
+        [min]="minDate">
+      </ion-input>
+      @if (submitted && !dataValida) {
+        <ion-note slot="error">Informe uma data válida (não futura)</ion-note>
+      }
+    </ion-item>
+
+    <!-- Local (opcional) -->
+    <ion-item>
+      <ion-label position="floating">Local de aplicação</ion-label>
+      <ion-input
+        [(ngModel)]="form.local"
+        placeholder="Ex: UBS Vila Nova"
+        type="text">
+      </ion-input>
+    </ion-item>
+
+    <!-- Lote (opcional) -->
+    <ion-item>
+      <ion-label position="floating">Lote da vacina</ion-label>
+      <ion-input
+        [(ngModel)]="form.lote"
+        placeholder="Ex: HB-24A"
+        type="text">
+      </ion-input>
+    </ion-item>
+
+    <!-- Profissional (opcional) -->
+    <ion-item>
+      <ion-label position="floating">Profissional responsável</ion-label>
+      <ion-input
+        [(ngModel)]="form.profissional"
+        placeholder="Ex: Enfermeira Maria"
+        type="text">
+      </ion-input>
+    </ion-item>
+
+    <ion-button
+      expand="block"
+      class="ion-margin-top"
+      (click)="salvar()">
+      <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+      Registrar vacinação
+    </ion-button>
+
+  }
+
+</ion-content>
