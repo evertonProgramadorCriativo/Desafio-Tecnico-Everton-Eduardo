@@ -58,7 +58,7 @@
                 {{ alertasAtrasados.length }} dose{{ alertasAtrasados.length > 1 ? 's' : '' }} atrasada{{ alertasAtrasados.length > 1 ? 's' : '' }}
               </p>
 
-              @for (alerta of alertasAtrasados; track (alerta.vacina?.id ?? '') + (alerta.dose?.doseNumero ?? 0)) {
+            @for (alerta of alertasAtrasados; track trackAlerta($index, alerta)) {
                 <div class="alerta-row">
                   <ion-badge class="alerta-badge">{{ alerta.vacina.sigla }}</ion-badge>
                   <span class="alerta-info">Dose {{ alerta.dose.doseNumero }} — prevista {{ alerta.dataPrevista | date:'MM/yyyy' }}</span>

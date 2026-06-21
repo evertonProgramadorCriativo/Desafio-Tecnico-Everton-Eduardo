@@ -6,7 +6,7 @@
 
 <ion-content [fullscreen]="true">
 
-  <!--  Hero  -->
+  <!-- Hero -->
   <div class="hero">
     <h2 class="hero-title">Olá, responsável!</h2>
     <p class="hero-sub">
@@ -15,7 +15,58 @@
     </p>
   </div>
 
-  <!--  Alertas  -->
+  <!-- Chip selector (cenário 4 — múltiplas crianças) -->
+  @if (mostraChips) {
+    <div class="chip-row">
+      @for (child of children; track child.id) {
+        <ion-chip
+          [class.chip-ativa]="isAtiva(child)"
+          (click)="selecionarCrianca(child)">
+          <span class="chip-avatar" [style.background]="getAvatarColor(child.sexo)">
+            {{ getInicial(child.nome) }}
+          </span>
+          <ion-label>{{ child.nome.split(' ')[0] }}</ion-label>
+        </ion-chip>
+      }
+    </div>
+  }
+
+  <!-- Card: situação vacinal da criança ativa -->
+  <div class="section">
+    <ion-card class="summary-card" [routerLink]="['/tabs/children', criancaAtiva.id]">
+      <ion-card-content>
+
+        <!-- Nome + avatar -->
+        <div class="summary-top">
+          <div class="summary-avatar" [style.background]="getAvatarColor(criancaAtiva.sexo)">
+            {{ getInicial(criancaAtiva.nome) }}
+          </div>
+          <div class="summary-info">
+            <p class="summary-name">{{ criancaAtiva.nome }}</p>
+            <p class="summary-label">
+              {{ resumo.aplicadas }} de {{ resumo.total }} doses aplicadas
+            </p>
+          </div>
+          <span class="summary-pct" [class]="progressClass">{{ resumo.percentual }}%</span>
+        </div>
+
+        <!-- ion-progress-bar com cor dinâmica -->
+        <ion-progress-bar
+          [value]="resumo.percentual / 100"
+          [class]="'vk-progress ' + progressClass">
+        </ion-progress-bar>
+
+        <!-- Link para o perfil completo -->
+        <div class="ver-perfil">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+          <span>Ver carteirinha completa</span>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Alertas da criança ativa -->
   @if (alertas.length > 0) {
     <div class="section">
       <h3 class="section-title">
@@ -24,11 +75,10 @@
         <ion-badge class="count-badge">{{ alertas.length }}</ion-badge>
       </h3>
 
-      @for (alerta of alertas; track alerta.childId + alerta.vacina.id + alerta.dose.doseNumero) {
+      @for (alerta of alertas; track trackAlerta($index, alerta)) {
         <ion-card class="alert-card" [class.alta]="alerta.urgencia === 'alta'">
           <ion-card-content>
             <div class="alert-row">
-
               <ion-icon
                 [name]="alerta.urgencia === 'alta' ? 'alert-circle' : 'time-outline'"
                 [class]="alerta.urgencia === 'alta' ? 'icon-alerta-alta' : 'icon-alerta-media'">
@@ -45,7 +95,6 @@
                 [class.status-pendente]="alerta.urgencia === 'media'">
                 {{ alerta.status }}
               </span>
-
             </div>
           </ion-card-content>
         </ion-card>
@@ -53,54 +102,19 @@
     </div>
   }
 
-  <!--  Tudo em dia  -->
+  <!-- Tudo em dia -->
   @if (alertas.length === 0) {
     <ion-card class="all-good-card">
       <ion-card-content>
         <div class="all-good">
           <ion-icon name="checkmark-circle"></ion-icon>
-          <p>Todas as vacinas em dia!</p>
+          <p>{{ criancaAtiva.nome.split(' ')[0] }} está em dia com as vacinas!</p>
         </div>
       </ion-card-content>
     </ion-card>
   }
 
-  <!--  Resumo por criança  -->
-  <div class="section">
-    <h3 class="section-title">
-      <ion-icon name="people-outline"></ion-icon>
-      Resumo por criança
-    </h3>
-
-    @for (item of childrenResumos; track item.child.id) {
-      <ion-card class="child-card" [routerLink]="['/tabs/children', item.child.id]">
-        <ion-card-content>
-          <div class="child-row">
-
-            <div class="avatar" [style.background]="getAvatarColor(item.child.sexo)">
-              {{ getInicial(item.child.nome) }}
-            </div>
-
-            <div class="child-info">
-              <p class="child-name">{{ item.child.nome }}</p>
-              <div class="mini-progress-bg">
-                <div class="mini-progress-fill" [style.width.%]="item.resumo.percentual"></div>
-              </div>
-              <p class="child-stats">
-                {{ item.resumo.aplicadas }}/{{ item.resumo.total }} doses
-                <span class="pct">{{ item.resumo.percentual }}%</span>
-              </p>
-            </div>
-
-            <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
-
-          </div>
-        </ion-card-content>
-      </ion-card>
-    }
-  </div>
-
-  <!--  Campanhas ativas  -->
+  <!-- Campanhas ativas -->
   @if (campanhas.length > 0) {
     <div class="section section-last">
       <h3 class="section-title">

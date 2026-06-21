@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import {
   IonHeader,
   IonToolbar,
@@ -10,6 +11,9 @@ import {
   IonCardContent,
   IonIcon,
   IonBadge,
+  IonChip,
+  IonLabel,
+  IonProgressBar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -29,17 +33,13 @@ import {
   DoseStatusItem,
   ResumoVacinal,
 } from '../services/vaccine-status.service';
+import { VaccinationRecordService } from '../services/vaccination-record.service';
 import { Child } from '../models/child.model';
 import { Campaign } from '../models/campaign.model';
 import { CHILDREN_MOCK } from '../data/children.mock';
 import { VACCINES_MOCK } from '../data/vaccines.mock';
 import { CAMPAIGNS_MOCK } from '../data/campaigns.mock';
-import { RECORDS_MOCK } from '../data/records.mock';
-
-interface ChildResumo {
-  child: Child;
-  resumo: ResumoVacinal;
-}
+import { testarCalculadoraResumo } from '../utils/vaccination-summary.calculator';
 
 @Component({
   selector: 'app-home',
@@ -57,14 +57,29 @@ interface ChildResumo {
     IonCardContent,
     IonIcon,
     IonBadge,
+    IonChip,
+    IonLabel,
+    IonProgressBar,
   ],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
+  readonly children: Child[] = CHILDREN_MOCK;
+  criancaAtiva: Child = CHILDREN_MOCK[0];
+
+  resumo: ResumoVacinal = {
+    total: 0,
+    aplicadas: 0,
+    atrasadas: 0,
+    pendentes: 0,
+    futuras: 0,
+    percentual: 0,
+  };
   alertas: Alerta[] = [];
-  childrenResumos: ChildResumo[] = [];
   campanhas: Campaign[] = [];
 
+  private sub?: Subscription;
   private vaccineStatus = inject(VaccineStatusService);
+  private recordService = inject(VaccinationRecordService); // ← agora funciona
 
   constructor() {
     addIcons({
@@ -80,50 +95,61 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-    this.calcularDashboard();
+    testarCalculadoraResumo();
+    this.selecionarCrianca(this.criancaAtiva);
   }
 
-  private calcularDashboard() {
-    const todosAlertas: Alerta[] = [];
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
 
-    for (const child of CHILDREN_MOCK) {
-      const fases = this.vaccineStatus.montarCarteirinha(
-        child,
-        VACCINES_MOCK,
-        RECORDS_MOCK,
-      );
+  selecionarCrianca(child: Child) {
+    this.criancaAtiva = child;
+    this.sub?.unsubscribe();
+    this.sub = this.recordService
+      .getRecordsByChild(child.id!)
+      .subscribe((records) => {
+        const fases = this.vaccineStatus.montarCarteirinha(
+          child,
+          VACCINES_MOCK,
+          records,
+        );
+        const itens: DoseStatusItem[] = fases.reduce<DoseStatusItem[]>(
+          (acc, f) => acc.concat(f.doses),
+          [],
+        );
 
-      const itens: DoseStatusItem[] = fases.reduce<DoseStatusItem[]>(
-        (acc, f) => acc.concat(f.doses),
-        [],
-      );
+        this.resumo = this.vaccineStatus.calcularResumoVacinal(itens);
+        this.alertas = this.vaccineStatus.gerarAlertas(child, itens);
+        this.campanhas = this.vaccineStatus.filtrarCampanhas(
+          child,
+          CAMPAIGNS_MOCK,
+        );
+      });
+  }
 
-      const resumo = this.vaccineStatus.calcularResumoVacinal(itens);
-      this.childrenResumos.push({ child, resumo });
-
-      const alertasChild = this.vaccineStatus.gerarAlertas(child, itens);
-      todosAlertas.push(...alertasChild);
-
-      const campanhasChild = this.vaccineStatus.filtrarCampanhas(
-        child,
-        CAMPAIGNS_MOCK,
-      );
-
-      for (const c of campanhasChild) {
-        if (!this.campanhas.find((x) => x.id === c.id)) {
-          this.campanhas.push(c);
-        }
-      }
-    }
-
-    this.alertas = todosAlertas.sort((a, b) => {
-      if (a.urgencia !== b.urgencia) return a.urgencia === 'alta' ? -1 : 1;
-      return a.dataPrevista.getTime() - b.dataPrevista.getTime();
-    });
+  // resolve TS2532 no track do template
+  trackAlerta(_index: number, alerta: Alerta): string {
+    return (alerta.vacina?.id ?? '') + String(alerta.dose?.doseNumero ?? '');
   }
 
   get totalCriancas(): number {
-    return CHILDREN_MOCK.length;
+    return this.children.length;
+  }
+
+  get mostraChips(): boolean {
+    return this.children.length > 1;
+  }
+
+  get progressClass(): string {
+    const p = this.resumo.percentual;
+    if (p >= 80) return 'prog-verde';
+    if (p >= 50) return 'prog-amarelo';
+    return 'prog-laranja';
+  }
+
+  isAtiva(child: Child): boolean {
+    return this.criancaAtiva.id === child.id;
   }
 
   getAvatarColor(sexo: string): string {

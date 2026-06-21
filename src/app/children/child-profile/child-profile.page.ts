@@ -40,6 +40,7 @@ import { CHILDREN_MOCK } from '../../data/children.mock';
 import { VACCINES_MOCK } from '../../data/vaccines.mock';
 import { CAMPAIGNS_MOCK } from '../../data/campaigns.mock';
 import { testarCalculadoraDose } from '../../utils/dose-status.calculator';
+import { testarCalculadoraResumo } from '../../utils/vaccination-summary.calculator';
 
 @Component({
   selector: 'app-child-profile',
@@ -99,6 +100,7 @@ export class ChildProfilePage implements OnInit, OnDestroy {
   ngOnInit() {
     // Testa os calculadores puros (abre o console para ver os resultados)
     testarCalculadoraDose();
+    testarCalculadoraResumo();
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.loadChild(id);
@@ -108,7 +110,7 @@ export class ChildProfilePage implements OnInit, OnDestroy {
     this.sub?.unsubscribe();
   }
 
-  //  Carrega criança e assina atualizações reativas ─
+  //  Carrega criança e assina atualizações reativas
 
   private loadChild(id: string) {
     const found = CHILDREN_MOCK.find((c) => c.id === id);
@@ -127,16 +129,19 @@ export class ChildProfilePage implements OnInit, OnDestroy {
         VACCINES_MOCK,
         records,
       );
-      const itens: DoseStatusItem[] = fases.reduce(
-        (todos, fase) => todos.concat(fase.doses),
-        [] as DoseStatusItem[],
-      );
+      const itens: DoseStatusItem[] = fases
+        .reduce<DoseStatusItem[]>((acc, f) => acc.concat(f.doses), [])
+        .reduce<DoseStatusItem[]>((acc, item) => acc.concat(item), []);
 
       this.resumoVacinal = this.vaccineStatus.calcularResumoVacinal(itens);
       this.alertas = this.vaccineStatus.gerarAlertas(found, itens);
 
       console.log('Resumo:', this.resumoVacinal);
     });
+  }
+  // resolve TS2532 no track do template
+  trackAlerta(_index: number, alerta: Alerta): string {
+    return (alerta.vacina?.id ?? '') + String(alerta.dose?.doseNumero ?? '');
   }
 
   //  Getters
