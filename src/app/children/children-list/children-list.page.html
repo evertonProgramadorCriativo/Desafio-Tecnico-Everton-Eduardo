@@ -6,7 +6,6 @@
 
 <ion-content>
 
-  <!-- LISTA com crianças -->
   @if (children.length > 0) {
     <ion-list lines="none" class="children-list">
 
@@ -14,34 +13,31 @@
         <ion-card class="child-card">
           <ion-card-content>
 
-            <div class="child-row">
+            <div class="child-row" [routerLink]="['/tabs/children', child.id]">
 
-              <!-- Avatar com inicial do nome -->
               <div
                 class="avatar"
                 [style.background]="getAvatarColor(child.sexo)">
                 {{ getInicial(child.nome) }}
               </div>
 
-              <!-- Dados da criança -->
               <div class="child-info">
                 <h2 class="child-name">{{ child.nome }}</h2>
                 <p class="child-age">{{ calcularIdade(child.dataNascimento) }}</p>
                 <p class="child-sex">{{ child.sexo === 'M' ? 'Masculino' : 'Feminino' }}</p>
               </div>
 
-              <!-- Ações -->
               <div class="child-actions">
                 <ion-button
                   fill="clear"
-                  (click)="openEditModal(child)">
+                  (click)="openEditModal(child); $event.stopPropagation()">
                   <ion-icon name="create-outline" slot="icon-only"></ion-icon>
                 </ion-button>
 
                 <ion-button
                   fill="clear"
                   color="danger"
-                  (click)="deleteChild(child)">
+                  (click)="deleteChild(child); $event.stopPropagation()">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
@@ -55,7 +51,6 @@
     </ion-list>
   }
 
-  <!-- EMPTY STATE -->
   @if (children.length === 0) {
     <div class="empty-state">
       <ion-icon name="male-female-outline" class="empty-icon"></ion-icon>
@@ -64,7 +59,6 @@
     </div>
   }
 
-  <!-- FAB — botão flutuante para adicionar -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="openAddModal()">
       <ion-icon name="add-outline"></ion-icon>

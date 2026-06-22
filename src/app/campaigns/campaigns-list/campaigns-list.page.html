@@ -1,0 +1,135 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Campanhas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Hero com resumo -->
+  <div class="hero">
+    <div class="hero-icon">
+      <ion-icon name="megaphone-outline"></ion-icon>
+    </div>
+    <div class="hero-texts">
+      <h2 class="hero-title">Campanhas de vacinação</h2>
+      <p class="hero-sub">
+        {{ totalAtivas }} ativa{{ totalAtivas !== 1 ? 's' : '' }}
+        @if (totalParaFamilia > 0) {
+          &nbsp;·&nbsp;
+          <span class="hero-familia">{{ totalParaFamilia }} para sua família</span>
+        }
+      </p>
+    </div>
+  </div>
+
+  <!-- Lista -->
+  <div class="campanhas-list">
+
+    @for (campanha of campanhas; track campanha.id) {
+
+      <ion-card
+        class="campanha-card"
+        [class.card-ativa]="campanha.status === 'ativa'"
+        [class.card-encerrada]="campanha.status === 'encerrada'">
+
+        <ion-card-content>
+
+          <!-- Linha de chips de status -->
+          <div class="chips-row">
+
+            <!-- Status da campanha -->
+            <div class="chip"
+              [class.chip-ativa]="campanha.status === 'ativa'"
+              [class.chip-encerrada]="campanha.status === 'encerrada'">
+              <ion-icon
+                [name]="campanha.status === 'ativa' ? 'checkmark-circle-outline' : 'close-circle-outline'">
+              </ion-icon>
+              {{ campanha.status === 'ativa' ? 'Ativa' : 'Encerrada' }}
+            </div>
+
+            <!-- Badge "Para sua família" -->
+            @if (campanha.paraMinhaFamilia) {
+              <div class="chip chip-familia">
+                <ion-icon name="people-outline"></ion-icon>
+                Para sua família
+              </div>
+            }
+
+          </div>
+
+          <!-- Título -->
+          <h2 class="campanha-titulo">{{ campanha.titulo }}</h2>
+
+          <!-- Descrição -->
+          <p class="campanha-desc">{{ campanha.descricao }}</p>
+
+          <!-- Crianças elegíveis (só para campanhas ativas relevantes) -->
+          @if (campanha.paraMinhaFamilia) {
+            <div class="criancas-elegiveis">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>
+                Elegível{{ campanha.criancasElegiveis.length > 1 ? 'is' : '' }}:
+                {{ campanha.criancasElegiveis.join(', ') }}
+              </span>
+            </div>
+          }
+
+          <!-- Divider -->
+          <div class="divider"></div>
+
+          <!-- Grid de informações -->
+          <div class="info-grid">
+
+            <!-- Período -->
+            <div class="info-item">
+              <div class="info-icon-wrap">
+                <ion-icon name="calendar-outline"></ion-icon>
+              </div>
+              <div>
+                <p class="info-label">Período</p>
+                <p class="info-value">
+                  {{ campanha.dataInicio | date:'dd/MM/yyyy' }}
+                  &nbsp;→&nbsp;
+                  {{ campanha.dataFim | date:'dd/MM/yyyy' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Público alvo -->
+            <div class="info-item">
+              <div class="info-icon-wrap">
+                <ion-icon name="people-outline"></ion-icon>
+              </div>
+              <div>
+                <p class="info-label">Público alvo</p>
+                <p class="info-value">
+                  {{ labelPublicoAlvo(campanha.publicoAlvo.idadeMinMeses, campanha.publicoAlvo.idadeMaxMeses) }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Vacinas incluídas -->
+            <div class="info-item">
+              <div class="info-icon-wrap">
+                <ion-icon name="medkit-outline"></ion-icon>
+              </div>
+              <div>
+                <p class="info-label">Vacinas incluídas</p>
+                <p class="info-value">
+                  {{ campanha.vaccineIds.length }}
+                  vacina{{ campanha.vaccineIds.length > 1 ? 's' : '' }}
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+    }
+
+  </div>
+
+</ion-content>
